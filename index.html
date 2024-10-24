@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<!--
+Name the United States
+
+SUMMARY:
+This started as a simple one page game to help me memorize all 50 USA states.
+
+Grew a bit as I explored various SVG interactions and other points of interest,
+and other random things I thought up.
+
+DESCRIPTION:
+I initially created this because I wanted to memorize all 50 states and I'd
+always get stuck on the last handful for some reason.  First version just had
+the names listed and blurred and unblurred as guesses were entered.
+
+Because the states were initially shown blurred out and in alphabetical
+order, it actually provided a hint for unguessed states.  I think this kept the
+actual 'memorization' less effective. Early on, it was challenging, but as my
+memorization of the states got better, it became too much of a hint, so I ended
+up adding a "shuffle_states" param to increase the difficulty.
+
+Later I added the SVG map and various other 'features' that turned it into a
+bit more of a 'game', and ultimately added Quiz Mode.
+
+Even though one just has to simply view the source to learn of some intentional
+ways to cheat, most of these I added to aid early on development.
+
+If you leverage one of the cheats or some other mechanism to avoid actually
+memorizing the states, remember kids, you are only cheating yourself :o)
+
+It started out simple but feature creep set in as I had fun adding the various
+enhancements, effects and learning other things along the way.
+
+
+Details about URL params and buttons...
+
+["shuffle_states" search term in URL]
+Adding "shuffle_states" to the URL and loading the page will
+shuffle the state object array. Shuffling the array causes the grid of state
+names to be ordered randomly. This increases the difficulty a bit if you've been
+relying on the alphabetical listing to give hints for missing states as you
+play.
+
+["debug" search term in URL]
+Adding "debug" to the URL will cause debug.js to be included
+and various debug elements and debug/test functionality will be added. This was
+most useful during initial design/implementation.
+
+["hide_map" search term in URL]
+Adding "hide_map" to the URI, the page will be loaded with
+the map hidden.  This + shuffling the states is the highest difficulty.
+
+["quiz_mode=<quiz_type>" search term in URL]
+Adding "quiz_mode" to the URL, starts the game in Quiz Mode, where the target
+state is shown popped out of the map and with a "marching ants" type of
+highlight.  You must guess that states name.  The quiz takes you through all 50
+states. If <quiz_type>="random", the order of the states are picked at random.
+If <quiz_type>="alphabetical" (or no type provided), the states are picked in
+alphabetical order.
+
+Example URL with all params:
+    NameTheUnitedStates.html?shuffle_states&hide_map&debug
+
+...and yes, you _could_ have "shuffle_states&hide_map&quiz_mode".  This is a
+secret hidden "insane" difficulty level.  Give it a try! :o)
+
+
+Debug Mode:
+Some buttons are a textarea are added below the map.
+["Show All" button] In "Debug" mode, clicking this button will show all state
+names, color the states, and show the abbreviations.
+
+["Solve Map" Button]
+Jumps to the solved state, showing entire map with abbreviations and list of
+states unblurred (and the animation).
+
+["Reset Map" button]
+Gets the map back into initial state; unsolved, abbreviations hidden.
+
+["Test Button"] In "Debug" mode, clicking this button runs whatever
+test/experiment code executed by the doTest() function. This changed over time
+as the page was being developed.  Click it and see what happens! :o)
+
+Also, in debug mode:
+Clicking on a state shows the state name and the abbreviation in the output
+textarea. Ex.  "Washington (WA)", "Oregon (OR)", etc. and also include which
+element the click event fired from.
+Ctrl+Clicking a state, will show it in the "popout" mode.
+
+NOTE:  Credit for the initial source of the map is given in a comment block
+above the SVG element near the bottom of this source, and has been modified
+for usage in this 'game', it has a license separate from the one I use for
+this game.
+-->
+<head>
+<script src="help.js"></script>
+
+<link href="Help-Styling.css"  rel="stylesheet"/>
+</head>
+<body>
+<a href="https://github.com/MrJimmo/NameTheUnitedStates">Link to repo</a>
+<p></p>
+<div id="questionMark" title="Show instructions (Ctrl+?)" style="display:none">?</div>
+<div id="blurredBackroundOverlay" style="display:none">&nbsp;</div>
+<div id="instructionsPopup">
+    <div class="instruction-popup-content-container">
+        <div id="popupCloseButton" title="Esc key to close instructions"
+        style="display:none">[X]</div>
+        <div class="game-title">Name The United States</div>
+        <div class="game-description">
+        This is a simple 'game' to help memorize the names of all 50 United States.
+        </div>
+        <div class="instructions-list-title">Instructions:</div>
+        <div class="instructions-unordered-list-container">
+            <ul class="instructions-unordered-list">
+                <li class="instructions-unordered-list-item">
+                    Enter guesses in the edit box and hit Enter or tap the
+                    "Check" button.
+                </li>
+                <li class="instructions-unordered-list-item">
+                    Total number of guesses are recorded. Best attempt is 50
+                    (with no mistakes)</li>
+                <li class="instructions-unordered-list-item">
+                    Holding <b>Ctrl+Shift</b> keys while clicking on a blurred name or
+                    state in the map, will reveal a random character of the
+                    states name.<br>NOTE: There is a <span id="cheatPenaltyText" class="cheat-penalty-text"></span> time penalty added to the
+                    clock for each character revealed.
+                </li>
+                <li class="instructions-unordered-list-item">
+                    No penalty for duplicate guesses
+                </li>
+                <li class="instructions-unordered-list-item">
+                    To Reset the game, refresh the page
+                </li>
+            </ul>
+        </div>
+        <div class="instructions-game-variations-title">
+        Game Variations
+        </div>
+        <div class="instructions-game-variations-description">
+        Free-form guessing of states with several different levels of difficulty:<br>
+        </div>
+        <div class="game-variation-ordered-list-container">
+
+            <div><button id="btnSkillLevel_Easy" class="button-skill-level"
+            onclick="location.href='NameTheUnitedStates.html';">Easy</button></div>
+            <div class="instructions-game-variations-button-description">
+            State names are listed in <b>alphabetical order</b> and the <b>map
+            is shown</b>.
+            </div>
+
+            <div><button id="btnSkillLevel_Normal" class="button-skill-level"
+            onclick="location.href='NameTheUnitedStates.html?shuffle_states';">Normal</button></div>
+            <div class="instructions-game-variations-button-description">
+            State names are listed in <b>random order</b> and the <b>map is
+            shown</b>.
+            </div>
+
+            <div><button id="btnSkillLevel_Hard" class="button-skill-level"
+            onclick="location.href='NameTheUnitedStates.html?hide_map';">Hard</button></div>
+            <div class="instructions-game-variations-button-description">
+            State names are listed in <b>alphabetical order</b> with the <b>map
+            hidden</b>.
+            </div>
+
+            <div><button id="btnSkillLevel_Expert" class="button-skill-level"
+            onclick="location.href='NameTheUnitedStates.html?shuffle_states&hide_map';">Expert</button></div>
+            <div class="instructions-game-variations-button-description">
+            State names are listed in <b>random order</b> with the <b>map
+            hidden.</b>
+            </div>
+        </div>
+        <div class="instructions-game-variations-title">
+        Quiz Mode
+        </div>
+        <div class="game-variation-ordered-list-container">
+            <div><button id="btnQuizMode_Alpha" class="button-quiz-mode"
+                onclick="location.href='NameTheUnitedStates.html?quiz_mode';">Alphabetical</button>
+            </div>
+            <div class="instructions-quiz-type-button-description">
+            You must guess the name of the State being highlighted.<br>States will
+            be selected in <b>alphabetical</b> order.
+            </div>
+            <div><button id="btnQuizMode_Random" class="button-quiz-mode"
+                onclick="location.href='NameTheUnitedStates.html?quiz_mode=random';">Random</button>
+            </div>
+            <div class="instructions-quiz-type-button-description">
+            You must guess the name of the State being highlighted.<br> States will
+            be selected in <b>random</b> order.
+            </div>
+        </div>
+    </div>
+</div>
+<div style="font-style: italic;">(yes, a cheap reuse of in game help :o)</div>
+</body>
+</html>

@@ -1,0 +1,214 @@
+body {
+    background-color: rgb(240, 240, 255);
+}
+
+/*
+These rules:
+    svg-state-path-default
+    svg-state-callout-line-default
+    svg-state-text-default
+...were originally inline style="..." statements for various SVG elements.
+I moved them to these rules to allow for cleaner SVG and manipulation via
+code.
+*/
+.svg-state-path-default {
+    fill              : #aaaaaa;
+    fill-opacity      : 1;
+    stroke            : #ffffff;
+    stroke-dasharray  : none;
+    stroke-linecap    : butt;
+    stroke-miterlimit : 4;
+    stroke-opacity    : 1;
+    stroke-width      : 1.25;
+}
+
+.svg-state-callout-line-default {
+    fill              : none;
+    stroke            : #000000;
+    stroke-dasharray  : none;
+    stroke-linecap    : butt;
+    stroke-linejoin   : miter;
+    stroke-miterlimit : 4;
+    stroke-opacity    : 1;
+    stroke-width      : 1.25;
+}
+
+.svg-state-text-default {
+    fill           : #ffffff;
+    fill-opacity   : 1;
+    font-family    : Trebuchet MS, Helvetica, sans-serif;
+    font-size      : 21px;
+    font-stretch   : normal;
+    font-style     : normal;
+    font-variant   : normal;
+    font-weight    : normal;
+    letter-spacing : 0px;
+    line-height    : 125%;
+    stroke         : none;
+    word-spacing   : 0px;
+}
+
+svg {
+    height    : auto;
+    max-width : 962px;
+}
+
+/*
+Rules for grid of state names
+*/
+.state-name-container {
+    column-gap : 12px;
+    display    : flex;
+    flex-wrap  : wrap;
+    row-gap    : 8px;
+    width      : 90%;
+}
+
+.state-name-div {
+    min-width : 128px;
+}
+
+.state-name-span-blurred {
+    filter : blur(10px);
+}
+
+.state-name-span-font {
+    font-size : 120%;
+}
+
+.state-name-span-size {
+    white-space : nowrap;
+}
+
+/*
+Other rules
+*/
+
+.display-hidden {
+    display : none !important;
+}
+
+.state-win-animation {
+    animation-duration        : 6s;
+    animation-iteration-count : infinite;
+    animation-name            : color-cycling-dash;
+    animation-timing-function : linear;
+    stroke-dasharray          : 100;
+    stroke-width              : 4;
+}
+
+/* Used as part of cheesy Win Animation */
+/* Causes tracers to color cycle*/
+@keyframes color-cycling-dash {
+    0% {
+        stroke-dashoffset : 0;
+        stroke            : red;
+    }
+    20% {
+        stroke-dashoffset : 200;
+        stroke            : orange;
+    }
+    40% {
+        stroke-dashoffset : 400;
+        stroke            : blue;
+    }
+    60% {
+        stroke-dashoffset : 600;
+        stroke            : yellow;
+    }
+    80% {
+        stroke-dashoffset : 800;
+        stroke            : purple;
+    }
+    100% {
+        stroke-dashoffset : 1000;
+        stroke            : red;
+    }
+}
+
+.incorrect-answer-text-glow {
+    --text-glow-color : red;
+    animation         : answer-text-glow 0.3s;
+}
+
+.correct-answer-text-glow {
+    --text-glow-color : green;
+    animation         : answer-text-glow 0.3s;
+}
+
+@keyframes answer-text-glow {
+    0% {
+        box-shadow : none;
+    }
+    50% {
+        box-shadow : inset 0 0 5px 5px var(--text-glow-color);
+    }
+    100% {
+        box-shadow : none;
+    }
+}
+
+.quiz-state-highlight {
+    animation        : quiz-state-highlight-keyframes 3.0s infinite linear;
+    stroke-dasharray : 10;
+    stroke-width     : 2;
+    stroke           : black;
+}
+
+@keyframes quiz-state-highlight-keyframes {
+    0% {
+        stroke-dashoffset : 0;
+        stroke-width      : 2;
+    }
+    50% {
+        stroke-dashoffset : 50;
+        stroke-width      : 6;
+    }
+    100% {
+        stroke-dashoffset : 100;
+        stroke-width      : 2;
+    }
+}
+
+
+/*
+The...
+    state-name-text-glow-red
+    state-name-text-glow-green
+...rules and keyframes are used to highlight text to indicate some status.
+
+Green is the one mainly used, to indicate a state that was already guessed
+correctly.
+
+Red may not be used at all, but creating these provided me a way to learn about
+using variables as a way to change something in the keyframes rule.
+*/
+.state-name-text-glow-red {
+    --text-glow-color-start : red;
+    --text-glow-color-end   : black;
+      animation             : text-glow-frames 0.5s 1;
+}
+
+.state-name-text-glow-green {
+    --text-glow-color-start : green;
+    --text-glow-color-end   : green;
+      animation             : text-glow-frames 0.5s 1;
+}
+
+@keyframes text-glow-frames {
+    0% {
+        text-shadow : none;
+        color       : var(--text-glow-color-start);
+    }
+    50% {
+        text-shadow:0 0 5px,
+                    0 0 10px,
+                    0 0 20px,
+                    0 0 40px;
+    }
+    100% {
+        text-shadow : none;
+        color       : var(--text-glow-color-end);
+    }
+}
+
