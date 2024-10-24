@@ -958,7 +958,7 @@ function init() {
     // development.
     if (g_fDebugMode) {
         var debug_script = document.createElement('script');
-        debug_script.src = "debug.js";
+        debug_script.src = "Debug.js";
         debug_script.onload = ( (e) => {
             init_debug();
         });
